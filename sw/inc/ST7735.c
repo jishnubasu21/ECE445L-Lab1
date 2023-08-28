@@ -1895,7 +1895,50 @@ void ST7735_sDecOut2(int32_t n){
  *      -100000 |     -**.***
  */
 void ST7735_sDecOut3(int32_t n) {
-    /* TODO (ECE445L Lab 1): complete this. */
+		
+		if(n > 99999){
+			ST7735_OutString(" **.***");
+			return; //Don't execute any further
+		} else if(n < -99999){
+			ST7735_OutString("-**.***");
+			return; //Don't execute any further
+		}
+	
+		uint8_t sign_neg = (n >= 0) ? 0 : 1; //1 if n is negative
+		if(sign_neg){
+			n = -n; //Flip neg sign to positive to make future math easier
+		}
+		
+		if(!sign_neg){ //If positive, add space for lining up decimals
+			ST7735_OutString(" ");
+		} 
+		uint32_t temp = n/1000; //Value going in front of decimal
+		if(temp > 9){ //Handles the portion before the decimal point
+				if(sign_neg){
+					ST7735_OutString("-");
+				}
+				ST7735_OutUDec(temp); //No space required in front of multi-digit result							
+		} else{	
+			ST7735_OutString(" ");
+			if(sign_neg){
+				ST7735_OutString("-");
+			}
+			ST7735_OutUDec(temp);
+		}
+		
+		ST7735_OutString("."); //Print decimal point
+		
+		temp = n%1000; //Value going after decimal
+		if(temp <= 9){
+			ST7735_OutUDec(0);
+			ST7735_OutUDec(0);
+			ST7735_OutUDec(temp);
+		} else if (temp <= 99){
+			ST7735_OutUDec(0);
+			ST7735_OutUDec(temp);
+		} else {
+			ST7735_OutUDec(temp);
+		}
 }
 
 /**
@@ -1923,8 +1966,34 @@ void ST7735_sDecOut3(int32_t n) {
  *        31999 |      999.97
  *        32000 |      ***.**
  */
-void ST7735_uBinOut5(uint32_t n) {
-    /* TODO (ECE445L Lab 1): complete this. */
+void ST7735_uBinOut5(uint32_t n) {	
+	
+	if(n >= 32000){ //Catch error case
+			ST7735_OutString("***.**");
+			return; //Don't execute any further
+	}		
+	
+	uint32_t temp = n >> 5; //Value going in front of decimal
+	if(temp > 99){ //Handles the portion before the decimal point
+		ST7735_OutUDec(temp);			
+	} else if(temp > 9){
+		ST7735_OutString(" ");
+		ST7735_OutUDec(temp);
+	} else{
+		ST7735_OutString("  ");
+		ST7735_OutUDec(temp);		
+	}
+	ST7735_OutString("."); //Print decimal point
+	
+	temp = n % 32; //Finds number being represented post-decimal
+	temp = (temp * 1000) >> 5; //Now trying to do (temp * 1000/32000) and account for 1000 denom factor in print
+	temp = temp/10;
+	if(temp > 9){
+		ST7735_OutUDec(temp);
+	} else{
+		ST7735_OutUDec(0); //Needed for cases like .09 otherwise prints 0.9
+		ST7735_OutUDec(temp);
+	}	
 }
 
 /**************ST7735_uBinOut6***************
@@ -1982,6 +2051,11 @@ void ST7735_uBinOut6(uint32_t n){
   }
 } 
 
+//The following are variables to keep track of when using scatter plot functions
+static int32_t plot_minX = 0;
+static int32_t plot_maxX = 0;
+static int32_t plot_minY = 0;
+static int32_t plot_maxY = 0;
 
 /**
  * @brief ST7735_XYplotInit specifies the X and Y axes for an X-Y scatter plot.
@@ -1995,7 +2069,14 @@ void ST7735_uBinOut6(uint32_t n){
  * @note Assumes minX < maxX, and minY < maxY.
  */
 void ST7735_XYplotInit(char *title, int32_t minX, int32_t maxX, int32_t minY, int32_t maxY){
-    /* TODO (ECE445L Lab 1): complete this. */
+    ST7735_FillScreen(ST7735_WHITE);
+		ST7735_FillRect(0, 0, 128, 32, ST7735_Color565(0, 0, 0));
+		ST7735_SetCursor(0,1); //Note this function uses columns and rows, not pixel values
+		ST7735_OutString(title);	
+		plot_minX = minX; //Update the static variable so appropriate values can be ignored when calling the plot functions
+		plot_maxX = maxX;
+		plot_minY = minY;
+		plot_maxY = maxY;
 }
 
 /**
@@ -2009,7 +2090,24 @@ void ST7735_XYplotInit(char *title, int32_t minX, int32_t maxX, int32_t minY, in
  *       all points beyond the minX, maxX, minY, maxY bounds.
  */
 void ST7735_XYplot(uint32_t num, int32_t bufX[], int32_t bufY[], uint16_t color) {
-    /* TODO (ECE445L Lab 1): complete this. */
+	
+		uint16_t y_dump[180];
+		for(uint32_t n = 0; n < num; n++){
+				uint8_t x_bounds_check = (bufX[n] <= plot_maxX) && (bufX[n] >= plot_minX);
+				uint8_t y_bounds_check = (bufY[n] <= plot_maxY) && (bufY[n] >= plot_minY);
+				if(x_bounds_check && y_bounds_check){ //Makes sure the point is within the min and max specications
+					uint16_t x = ((bufX[n]-plot_minX)*127) / (plot_maxX-plot_minX);
+					uint16_t y = ((plot_maxY-bufY[n])*127) / (plot_maxY-plot_minY);
+					y = y + 32;
+					y_dump[n] = y;
+					ST7735_DrawPixel(x, y, color);
+					ST7735_DrawPixel(x+1, y,   color);
+					ST7735_DrawPixel(x, y+1, color);
+					ST7735_DrawPixel(x+1, y+1, color);
+
+
+				}
+		}	
 }
 
 // plotLine function that is used when dx is greater than dy

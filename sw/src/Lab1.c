@@ -1,10 +1,10 @@
 /**
  * @file    Lab1.c
- * @author  your name (you@domain.com), Jonathan Valvano, Matthew Yu, Jared
+ * @author  Jishnu Basu (jishnubasu@utexas.edu), Jonathan Valvano, Matthew Yu, Jared
  *          McArthur
- *          <TA NAME and LAB SECTION # HERE>
- * @version 1.3.0
- * @date    2023-01-10 <REPLACE WITH DATE OF LAST REVISION>
+ *          <Matthew Yu and 17720>
+ * @version 1.3.1
+ * @date    2023-08-26
  * @copyright Copyright (c) 2022
  * @brief
  *          Possible main program to test Lab 1.
