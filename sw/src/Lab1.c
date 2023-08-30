@@ -117,9 +117,26 @@ const int32_t CircleYbuf[180] = { 0, 70, 140, 209, 278, 347, 416, 484, 551, 618,
 const int32_t StarXbuf[50] = { 0, -6, -12, -18, -24, -30, -35, -41, -47, -53, 59, 53, 47, 41, 35, 30, 24, 18, 12, 6, 95, 76, 57, 38, 19, 0, -19, -38, -57, -76, -59, -44, -28, -13, 3, 18, 33, 49, 64, 80, -95, -80, -64, -49, -33, -18, -3, 13, 28, 44 };
 const int32_t StarYbuf[50] = { 190, 172, 154, 136, 118, 100, 81, 63, 45, 27, 9, 27, 45, 63, 81, 100, 118, 136, 154, 172, 121, 121, 121, 121, 121, 121, 121, 121, 121, 121, 9, 20, 31, 43, 54, 65, 76, 87, 99, 110, 121, 110, 99, 87, 76, 65, 54, 43, 31, 20 };
 
-
+uint32_t startTime,stopTime; // in 12.5ns
+uint32_t ElapsedTime,ElapsedTime2; // in usec
 /** Main functions. */
 int main(void) {
+//	PLL_Init(Bus80MHz);  // Bus clock is 80 MHz 
+//  ST7735_InitR(INITR_REDTAB); 
+//  NVIC_ST_RELOAD_R = 0x00FFFFFF; // maximum reload value
+//  NVIC_ST_CURRENT_R = 0;    // any write to current clears it
+//  NVIC_ST_CTRL_R = 5;
+//  startTime = NVIC_ST_CURRENT_R;
+//  ST7735_uBinOut5(16383);  // output 511.97
+//  stopTime = NVIC_ST_CURRENT_R;
+//  ElapsedTime = ((startTime-stopTime)&0x0FFFFFF)/80; // usec
+//  startTime = NVIC_ST_CURRENT_R;
+//  ST7735_OutString("511.97");  // output 511.97
+//  stopTime = NVIC_ST_CURRENT_R;
+//  ElapsedTime2 = ((startTime-stopTime)&0x0FFFFFF)/80; // usec  
+//  while(1){} 
+
+	
     uint32_t i;
     PLL_Init(Bus80MHz);
     PortF_Init();

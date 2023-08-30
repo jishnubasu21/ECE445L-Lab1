@@ -1908,7 +1908,7 @@ void ST7735_sDecOut3(int32_t n) {
 		if(sign_neg){
 			n = -n; //Flip neg sign to positive to make future math easier
 		}
-		
+
 		if(!sign_neg){ //If positive, add space for lining up decimals
 			ST7735_OutString(" ");
 		} 
@@ -1917,9 +1917,9 @@ void ST7735_sDecOut3(int32_t n) {
 				if(sign_neg){
 					ST7735_OutString("-");
 				}
-				ST7735_OutUDec(temp); //No space required in front of multi-digit result							
+				ST7735_OutUDec(temp); 							
 		} else{	
-			ST7735_OutString(" ");
+			ST7735_OutString(" "); //Have single digit result requiring additional space
 			if(sign_neg){
 				ST7735_OutString("-");
 			}
@@ -2091,23 +2091,19 @@ void ST7735_XYplotInit(char *title, int32_t minX, int32_t maxX, int32_t minY, in
  */
 void ST7735_XYplot(uint32_t num, int32_t bufX[], int32_t bufY[], uint16_t color) {
 	
-		uint16_t y_dump[180];
-		for(uint32_t n = 0; n < num; n++){
-				uint8_t x_bounds_check = (bufX[n] <= plot_maxX) && (bufX[n] >= plot_minX);
-				uint8_t y_bounds_check = (bufY[n] <= plot_maxY) && (bufY[n] >= plot_minY);
-				if(x_bounds_check && y_bounds_check){ //Makes sure the point is within the min and max specications
-					uint16_t x = ((bufX[n]-plot_minX)*127) / (plot_maxX-plot_minX);
-					uint16_t y = ((plot_maxY-bufY[n])*127) / (plot_maxY-plot_minY);
-					y = y + 32;
-					y_dump[n] = y;
-					ST7735_DrawPixel(x, y, color);
-					ST7735_DrawPixel(x+1, y,   color);
-					ST7735_DrawPixel(x, y+1, color);
-					ST7735_DrawPixel(x+1, y+1, color);
-
-
-				}
-		}	
+	for(uint32_t n = 0; n < num; n++){
+			uint8_t x_bounds_check = (bufX[n] <= plot_maxX) && (bufX[n] >= plot_minX);
+			uint8_t y_bounds_check = (bufY[n] <= plot_maxY) && (bufY[n] >= plot_minY);
+			if(x_bounds_check && y_bounds_check){ //Makes sure the point is within the min and max specications
+				uint16_t x = ((bufX[n]-plot_minX)*127) / (plot_maxX-plot_minX);
+				uint16_t y = ((plot_maxY-bufY[n])*127) / (plot_maxY-plot_minY);
+				y = y + 32;
+				ST7735_DrawPixel(x, y, color);
+				ST7735_DrawPixel(x+1, y,   color);
+				ST7735_DrawPixel(x, y+1, color);
+				ST7735_DrawPixel(x+1, y+1, color);
+			}
+	}	
 }
 
 // plotLine function that is used when dx is greater than dy
