@@ -1986,8 +1986,7 @@ void ST7735_uBinOut5(uint32_t n) {
 	ST7735_OutString("."); //Print decimal point
 	
 	temp = n % 32; //Finds number being represented post-decimal
-	temp = (temp * 1000) >> 5; //Now trying to do (temp * 1000/32000) and account for 1000 denom factor in print
-	temp = temp/10;
+	temp = ((temp * 100) + 16) >> 5; //Now trying to do (temp * 1000/32000) and account for 1000 denom factor in print
 	if(temp > 9){
 		ST7735_OutUDec(temp);
 	} else{
